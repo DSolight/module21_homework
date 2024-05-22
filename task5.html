@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Список задач</title>
+</head>
+<body>
+<title>Список задач</title>
+<input type="number" id="userIdInput" placeholder="Введите ID пользователя">
+<button id="getTasksBtn">Получить список задач</button>
+<ol id="tasksList"></ol>
+<script>
+    const getTasksBtn = document.getElementById('getTasksBtn');
+    const tasksList = document.getElementById('tasksList');
+
+    getTasksBtn.addEventListener('click', () => {
+        const userId = document.getElementById('userIdInput').value;
+
+        fetch(`https://jsonplaceholder.typicode.com/users/${userId}/todos`)
+            .then(response => {
+                const result = response.json();
+                return result;
+            })
+            .then(data => {
+                if (data.length === 0) {
+                    throw new Error('Пользователь с указанным ID не найден');
+                }
+
+                tasksList.innerHTML = '';
+                data.forEach(task => {
+                    const taskItem = document.createElement('li');
+                    taskItem.textContent = task.title;
+                    if (task.completed) {
+                        taskItem.style.textDecoration = 'line-through';
+                    }
+                    tasksList.appendChild(taskItem);
+                });
+            })
+            .catch(error => {
+                tasksList.innerHTML = error.message;
+            });
+    });
+</script>
+</body>
+</html>
